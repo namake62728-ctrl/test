@@ -702,3 +702,45 @@ const GAS_URL =
   renderExpenses();
   renderSummary();
 })();
+// 一覧取得して表示
+async function loadList() {
+  const res = await fetch(GAS_URL);
+  const j = await res.json();
+  const box = document.getElementById('list');
+  if (!j.ok) { box.textContent = '読み込みエラー'; return; }
+  const rows = j.data.map(r => {
+    const dt = new Date(r.timestamp).toLocaleString();
+    const amt = Number(r.amount).toLocaleString();
+    return `<tr><td>${dt}</td><td>${r.name}</td><td style="text-align:right">${amt}</td><td>${r.note ?? ''}</td></tr>`;
+  }).join('');
+  box.innerHTML = `
+    <table border="1" cellspacing="0" cellpadding="6">
+      <thead><tr><th>日時</th><th>名前</th><th>金額</th><th>メモ</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="4">まだありません</td></tr>'}</tbody>
+    </table>`;
+}
+
+// 1件追加してから一覧更新
+async function saveOne() {
+  const name = document.getElementById('name')?.value.trim();
+  const amount = Number(document.getElementById('amount')?.value);
+  const note = document.getElementById('note')?.value.trim();
+  if (!name || !isFinite(amount)) { alert('名前と金額を入力'); return; }
+  const res = await fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json' },
+    body: JSON.stringify({ name, amount, note })
+  });
+  const j = await res.json();
+  if (!j.ok) { alert('保存エラー'); return; }
+  document.getElementById('amount').value = '';
+  document.getElementById('note').value = '';
+  await loadList();
+}
+
+// 初期化：ボタン紐づけ＆ポーリング（準リアルタイム）
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('save')?.addEventListener('click', saveOne);
+  loadList();
+  setInterval(loadList, 5000); // 5秒ごとに再読込（好みで調整）
+});
