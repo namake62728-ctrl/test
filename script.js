@@ -1,3 +1,8 @@
+// （コメントとして残すのはOK）
+ // https://script.google.com/macros/s/AKfycbwZysR7RIqjFcBC6LcQBVW-6tMWW8TMifibNiHrOtZ5ptL6b0EzY_IofFRwPvWfe0yJ/exec
+const GAS_URL =
+  'https://script.google.com/macros/s/AKfycbwZysR7RIqjFcBC6LcQBVW-6tMWW8TMifibNiHrOtZ5ptL6b0EzY_IofFRwPvWfe0yJ/exec';
+
 (() => {
   const STORAGE_KEY = 'club-dues-v1';
 
